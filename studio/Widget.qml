@@ -5,6 +5,30 @@ import qs.Ui
 import qs.Commons
 Panel {
  id: root
+ component StudioTab: C.Button {
+  id: tab
+  implicitHeight:34
+  background: Rectangle {
+   color:tab.hovered?"#12ffffff":"transparent"
+   radius:6; border.width:tab.activeFocus?1:0; border.color:"#7089a7cd"
+   Rectangle { anchors.bottom:parent.bottom; anchors.horizontalCenter:parent.horizontalCenter; width:parent.width-24; height:2; radius:1; color:Color.popups.text; opacity:tab.highlighted?0.85:0; Behavior on opacity { NumberAnimation { duration:140 } } }
+  }
+  contentItem: Text { text:tab.text; color:Color.popups.text; opacity:tab.highlighted?1:tab.hovered?0.9:0.65; font.pixelSize:13; font.weight:tab.highlighted?Font.DemiBold:Font.Normal; horizontalAlignment:Text.AlignHCenter; verticalAlignment:Text.AlignVCenter; Behavior on opacity { NumberAnimation { duration:140 } } }
+ }
+ component StudioToggle: C.CheckBox {
+  id: toggle
+  implicitHeight:30
+  spacing:10
+  indicator: Rectangle {
+   x:toggle.leftPadding; y:(toggle.height-height)/2
+   width:30; height:18; radius:9
+   color:toggle.checked?"#91a8d0":"#394052"
+   Behavior on color { ColorAnimation { duration:120 } }
+   Rectangle { x:toggle.checked?14:3; y:3; width:12; height:12; radius:6; color:toggle.checked?"#152033":"#aab3c4"; Behavior on x { NumberAnimation { duration:120; easing.type:Easing.OutCubic } } }
+   border.width:toggle.activeFocus?1:0; border.color:"#e5edff"
+  }
+  contentItem: Text { text:toggle.text; leftPadding:toggle.indicator.width+toggle.spacing; color:Color.popups.text; opacity:toggle.enabled?0.9:0.4; font.pixelSize:13; verticalAlignment:Text.AlignVCenter }
+ }
  component StudioButton: C.Button {
   id: control
   implicitHeight:36*(styled?materialController.current.panelControlSpacing:1)
@@ -182,12 +206,12 @@ Panel {
    anchors.fill: parent
    spacing:12
    Keys.onEscapePressed: root.close()
-   Text { text:"Surface Studio"; color:Color.popups.text; font.pixelSize:23; font.bold:true }
+   Text { text:"Surface Studio"; color:Color.popups.text; font.pixelSize:20; font.weight:Font.DemiBold }
    RowLayout {
     Layout.fillWidth:true
     Repeater {
      model:["General","Colors","Border","Effects"]
-     StudioButton {
+     StudioTab {
       required property int index
       required property string modelData
       Layout.fillWidth:true
@@ -197,15 +221,29 @@ Panel {
      }
     }
    }
-   RowLayout {
-    Layout.fillWidth:true
-    StudioButton { Layout.fillWidth:true; text:"Bar"; highlighted:!root.targetPanel; onClicked:root.targetPanel=false }
-    StudioButton { Layout.fillWidth:true; text:"Panels"; highlighted:root.targetPanel; onClicked:root.targetPanel=true }
+   Rectangle {
+    Layout.fillWidth:true; implicitHeight:34; radius:8; color:"#18000000"
+    RowLayout {
+     anchors.fill:parent; anchors.margins:3; spacing:3
+     Repeater {
+      model:["Bar","Panels"]
+      C.Button {
+       id: segment
+       required property int index
+       required property string modelData
+       Layout.fillWidth:true; Layout.fillHeight:true; Layout.preferredWidth:1
+       checked:root.targetPanel===(index===1)
+       onClicked:root.targetPanel=index===1
+       background:Rectangle { radius:6; color:segment.checked?"#22ffffff":segment.hovered?"#0cffffff":"transparent"; Behavior on color { ColorAnimation { duration:130 } } }
+       contentItem:Text { text:segment.modelData; color:Color.popups.text; opacity:segment.checked?1:0.65; font.pixelSize:12; horizontalAlignment:Text.AlignHCenter; verticalAlignment:Text.AlignVCenter }
+      }
+     }
+    }
    }
    Item {
-    Layout.fillWidth:true; Layout.preferredHeight:110
+    Layout.fillWidth:true; Layout.preferredHeight:root.targetPanel?126:86
     Rectangle {
-     anchors.fill:parent; anchors.margins:12; radius:8; color:"#172536"
+     anchors.fill:parent; anchors.margins:8; radius:8; color:"#172536"
      clip:true
      Row {
       anchors.fill:parent
@@ -214,7 +252,7 @@ Panel {
     }
     Item {
      id: sampleCard
-     anchors.fill:parent; anchors.margins:12
+     anchors.fill:parent; anchors.margins:8
      property real corner:root.targetPanel?(root.profileBorderEnabled?root.profileValue("borderRadius"):Style.cornerRadius):0
      SurfaceShadow { settings:root.previewSettings; radius:sampleCard.corner }
      Rectangle { anchors.fill:parent; radius:sampleCard.corner; color:root.targetPanel?Color.popups.background:Color.bar.background; visible:!(root.studio && ((root.studio.current.enabled && (root.targetPanel?root.studio.current.panels:root.studio.current.bar)) || root.profileValue("effectsEnabled"))) }
@@ -230,7 +268,30 @@ Panel {
       baseColor:root.targetPanel?Color.popups.background:Color.bar.background
      }
      BorderOverlay { radius:sampleCard.corner; borderSpec:root.previewBorderEnabled?root.previewBorder:(root.targetPanel?Border.surfaceSpec("popups","border",Color.popups.border,2):Border.none()) }
-     Text { anchors.centerIn:parent; text:root.targetPanel?"Panels · live preview":"Bar · live preview"; color:Color.popups.text; font.pixelSize:16 }
+     RowLayout {
+      visible:!root.targetPanel
+      anchors.fill:parent; anchors.margins:16; spacing:12
+      Text { text:"◈"; color:Color.bar.text; font.pixelSize:18 }
+      Text { text:"1   2   3"; color:Color.bar.text; opacity:0.65; font.pixelSize:12 }
+      Item { Layout.fillWidth:true }
+      Text { text:"10:24"; color:Color.bar.text; font.pixelSize:13; font.weight:Font.Medium }
+      Item { Layout.fillWidth:true }
+      Text { text:"♫   ◉   ▰"; color:Color.bar.text; opacity:0.85; font.pixelSize:13 }
+     }
+     ColumnLayout {
+      visible:root.targetPanel
+      anchors.fill:parent; anchors.margins:14; spacing:6
+      RowLayout {
+       Text { text:"Quick settings"; color:Color.popups.text; font.pixelSize:13; font.weight:Font.DemiBold }
+       Item { Layout.fillWidth:true }
+       Text { text:"•••"; color:Color.popups.text; opacity:0.5 }
+      }
+      RowLayout {
+       StudioButton { text:"Wi-Fi"; highlighted:true; Layout.fillWidth:true }
+       StudioButton { text:"Bluetooth"; Layout.fillWidth:true }
+       StudioButton { text:"Sound"; Layout.fillWidth:true }
+      }
+     }
     }
    }
    C.ScrollView {
@@ -247,9 +308,9 @@ Panel {
       Layout.fillWidth:true
       spacing:12
     RowLayout {
-     C.CheckBox { text:"Gradients"; checked:root.studio ? root.studio.current.enabled : false; onClicked:root.studio.change("enabled",checked) }
-     C.CheckBox { text:"Bar"; checked:root.studio ? root.studio.current.bar : false; onClicked:root.studio.change("bar",checked) }
-     C.CheckBox { text:"Panelek"; checked:root.studio ? root.studio.current.panels : false; onClicked:root.studio.change("panels",checked) }
+     StudioToggle { text:"Gradients"; checked:root.studio ? root.studio.current.enabled : false; onClicked:root.studio.change("enabled",checked) }
+     StudioToggle { text:"Bar"; checked:root.studio ? root.studio.current.bar : false; onClicked:root.studio.change("bar",checked) }
+     StudioToggle { text:"Panels"; checked:root.studio ? root.studio.current.panels : false; onClicked:root.studio.change("panels",checked) }
     }
     StudioButton {
      Layout.fillWidth:true
@@ -329,7 +390,7 @@ Panel {
       Layout.fillWidth:true
       spacing:12
 
-    C.CheckBox { text:"Custom border"; checked:root.profileBorderEnabled; onClicked:root.setProfileBorder(checked) }
+    StudioToggle { text:"Custom border"; checked:root.profileBorderEnabled; onClicked:root.setProfileBorder(checked) }
     Text { Layout.fillWidth:true; wrapMode:Text.WordWrap; text:root.targetPanel?"When disabled, the theme border and rounding apply.":(root.barTransparent?"The bar is transparent. Disable transparency in General to show the border.":"Border changes apply to the bar immediately."); color:Color.popups.text; opacity:0.65; font.pixelSize:12 }
     ColumnLayout {
      Layout.fillWidth:true
@@ -340,7 +401,7 @@ Panel {
      StudioSlider { Layout.fillWidth:true; from:0; to:12; stepSize:1; value:root.studio?root.profileValue("borderWidth"):2; onMoved:root.profileChange("borderWidth",value) }
      Text { visible:root.targetPanel; text:"Corner radius · "+(root.studio?root.profileValue("borderRadius"):8)+" px"; color:Color.popups.text; font.pixelSize:13 }
      StudioSlider { visible:root.targetPanel; Layout.fillWidth:true; from:0; to:40; stepSize:1; value:root.studio?root.profileValue("borderRadius"):8; onMoved:root.profileChange("borderRadius",value) }
-     C.CheckBox { text:"Gradient border"; checked:root.studio && root.profileValue("borderGradient"); onClicked:root.profileChange("borderGradient",checked) }
+     StudioToggle { text:"Gradient border"; checked:root.studio && root.profileValue("borderGradient"); onClicked:root.profileChange("borderGradient",checked) }
      Repeater {
       model:["Border color","Second color"]
       RowLayout {
@@ -381,7 +442,7 @@ Panel {
       visible:root.activeTab===3
       Layout.fillWidth:true; spacing:12
       Text { text:root.effectPage===3?"Buttons and controls":"Light, material and depth"; color:Color.popups.text; font.pixelSize:16; font.bold:true }
-      C.CheckBox { visible:root.effectPage!==3; text:"Visual effects"; checked:root.studio && root.profileValue("effectsEnabled"); onClicked:root.profileChange("effectsEnabled",checked) }
+      StudioToggle { visible:root.effectPage!==3; text:"Visual effects"; checked:root.studio && root.profileValue("effectsEnabled"); onClicked:root.profileChange("effectsEnabled",checked) }
       RowLayout {
        Layout.fillWidth:true
        Repeater {
@@ -395,7 +456,7 @@ Panel {
        Layout.fillWidth:true
        Repeater {
         model:["Material","Light","Shadow","Controls"]
-        StudioButton { required property int index; required property string modelData; Layout.fillWidth:true; text:modelData; highlighted:root.effectPage===index; onClicked:root.effectPage=index }
+        StudioTab { required property int index; required property string modelData; Layout.fillWidth:true; text:modelData; highlighted:root.effectPage===index; onClicked:root.effectPage=index }
        }
       }
       C.ComboBox {
@@ -405,14 +466,14 @@ Panel {
        currentIndex:root.studio?root.profileValue("edgeProfile"):1
        onActivated:root.profileChange("edgeProfile",currentIndex)
       }
-      C.CheckBox { visible:root.effectPage===0; text:"Backdrop blur"; checked:root.studio && root.profileValue("backdropBlur"); onClicked:root.profileChange("backdropBlur",checked) }
+      StudioToggle { visible:root.effectPage===0; text:"Backdrop blur"; checked:root.studio && root.profileValue("backdropBlur"); onClicked:root.profileChange("backdropBlur",checked) }
       Text { visible:root.effectPage===0; Layout.fillWidth:true; wrapMode:Text.WordWrap; text:"Backdrop blur also enables Hyprland's shared blur engine. Lighting and material effects are rendered locally."; color:Color.popups.text; opacity:0.6; font.pixelSize:11 }
-      C.CheckBox { visible:root.effectPage===1; text:"Pointer-following light"; checked:root.studio && root.profileValue("followLight"); onClicked:root.profileChange("followLight",checked) }
-      C.CheckBox { visible:root.effectPage===3 && root.targetPanel; text:"Button materials and panel control styling"; checked:root.studio && root.profileValue("controlsEnabled"); onClicked:root.profileChange("controlsEnabled",checked) }
+      StudioToggle { visible:root.effectPage===1; text:"Pointer-following light"; checked:root.studio && root.profileValue("followLight"); onClicked:root.profileChange("followLight",checked) }
+      StudioToggle { visible:root.effectPage===3 && root.targetPanel; text:"Button materials and panel control styling"; checked:root.studio && root.profileValue("controlsEnabled"); onClicked:root.profileChange("controlsEnabled",checked) }
       ColumnLayout {
        visible:root.effectPage===3 && root.targetPanel
        Layout.fillWidth:true; spacing:10
-       C.CheckBox { text:"Custom button colors"; checked:root.studio && root.studio.current.panelControlColorsEnabled; onClicked:{ root.studio.change("panelControlColorsEnabled",checked); if(checked) root.studio.change("panelControlsEnabled",true) } }
+       StudioToggle { text:"Custom button colors"; checked:root.studio && root.studio.current.panelControlColorsEnabled; onClicked:{ root.studio.change("panelControlColorsEnabled",checked); if(checked) root.studio.change("panelControlsEnabled",true) } }
        Text { Layout.fillWidth:true; wrapMode:Text.WordWrap; text:"Choose a state and its color. Lighting and shadows are preserved. Hover color takes precedence over selection."; color:Color.popups.text; font.pixelSize:12 }
        RowLayout {
         Layout.fillWidth:true
