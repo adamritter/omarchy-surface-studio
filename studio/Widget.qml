@@ -241,7 +241,7 @@ Panel {
     }
    }
    Item {
-    Layout.fillWidth:true; Layout.preferredHeight:root.targetPanel?126:86
+    Layout.fillWidth:true; Layout.preferredHeight:root.targetPanel?126:Math.max(62,(root.bar?root.bar.barSize:Style.bar.sizeHorizontal)+32)
     Rectangle {
      anchors.fill:parent; anchors.margins:8; radius:8; color:"#172536"
      clip:true
@@ -252,7 +252,9 @@ Panel {
     }
     Item {
      id: sampleCard
-     anchors.fill:parent; anchors.margins:8
+     anchors.centerIn:parent
+     width:parent.width-16
+     height:root.targetPanel?parent.height-16:(root.bar?root.bar.barSize:Style.bar.sizeHorizontal)
      property real corner:root.targetPanel?(root.profileBorderEnabled?root.profileValue("borderRadius"):Style.cornerRadius):0
      SurfaceShadow { settings:root.previewSettings; radius:sampleCard.corner }
      Rectangle { anchors.fill:parent; radius:sampleCard.corner; color:root.targetPanel?Color.popups.background:Color.bar.background; visible:!(root.studio && ((root.studio.current.enabled && (root.targetPanel?root.studio.current.panels:root.studio.current.bar)) || root.profileValue("effectsEnabled"))) }
@@ -270,7 +272,7 @@ Panel {
      BorderOverlay { radius:sampleCard.corner; borderSpec:root.previewBorderEnabled?root.previewBorder:(root.targetPanel?Border.surfaceSpec("popups","border",Color.popups.border,2):Border.none()) }
      RowLayout {
       visible:!root.targetPanel
-      anchors.fill:parent; anchors.margins:16; spacing:12
+      anchors.fill:parent; anchors.leftMargin:12; anchors.rightMargin:12; spacing:12
       Text { text:"◈"; color:Color.bar.text; font.pixelSize:18 }
       Text { text:"1   2   3"; color:Color.bar.text; opacity:0.65; font.pixelSize:12 }
       Item { Layout.fillWidth:true }
