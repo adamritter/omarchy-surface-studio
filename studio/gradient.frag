@@ -12,7 +12,47 @@ layout(std140,binding=0) uniform buf {
  float effects; float lightAngle; float bevelWidth; float bevelStrength;
  float rimStrength; float sheenStrength; float innerShadow;
  float rimWidth; float edgeProfile; float roughness; float lightX; float lightY; float lightSize; float tintAmount;
+ float rayGlass; float glassIor; float glassThickness; float glassMix;
 };
+// Bounded analytic ray tracing: a beveled entrance normal, planar rear
+// interface and two virtual environment planes. No desktop texture or BVH.
+vec3 virtualBackdrop(vec2 p) {
+ vec2 t=clamp(p/max(size,vec2(1.0)),0.0,1.0);
+ vec3 tint=mix(mix(c1.rgb,c2.rgb,t.x),mix(c3.rgb,c4.rgb,t.x),t.y);
+ return mix(baseColor.rgb,tint,strength);
+}
+vec3 reflectedEnvironment(vec3 origin, vec3 direction) {
+ // Analytic intersection with a front-facing softbox plane at z = 96.
+ if(direction.z<=0.001) return vec3(0.035,0.045,0.065);
+ vec2 hit=origin.xy+direction.xy*(96.0/direction.z);
+ vec2 lamp=vec2(lightX,lightY)*size;
+ vec2 extent=vec2(32.0+lightSize*180.0,16.0+lightSize*70.0);
+ vec2 q=(hit-lamp)/extent;
+ float spread=1.0+roughness*3.0;
+ float softbox=exp(-dot(q,q)/spread)/sqrt(spread);
+ return vec3(0.055,0.07,0.10)+vec3(0.84,0.90,1.0)*softbox;
+}
+vec3 traceGlass(vec2 pixel, vec3 normal, vec3 substrate) {
+ vec3 incident=vec3(0.0,0.0,-1.0);
+ float ior=clamp(glassIor,1.0,1.8);
+ float f0=pow((ior-1.0)/(ior+1.0),2.0);
+ float fresnel=f0+(1.0-f0)*pow(1.0-clamp(normal.z,0.0,1.0),5.0);
+ vec3 transmitted=refract(incident,normal,1.0/ior);
+ float distance=glassThickness/max(-transmitted.z,0.05);
+ vec3 backHit=vec3(pixel,0.0)+transmitted*distance;
+ vec3 outgoing=refract(transmitted,vec3(0.0,0.0,1.0),ior);
+ vec3 reflected=reflectedEnvironment(vec3(pixel,0.0),reflect(incident,normal));
+ // Total internal reflection at the rear surface: a single bounded bounce.
+ if(dot(outgoing,outgoing)<0.001) {
+  vec3 bounce=reflect(transmitted,vec3(0.0,0.0,1.0));
+  return mix(substrate,reflectedEnvironment(backHit,bounce),0.65);
+ }
+ vec2 backdropHit=backHit.xy+outgoing.xy*(32.0/max(-outgoing.z,0.05));
+ vec3 shifted=virtualBackdrop(backdropHit)-virtualBackdrop(pixel);
+ vec3 attenuation=exp(-vec3(0.008,0.004,0.002)*distance);
+ vec3 through=max(vec3(0.0),substrate+shifted*(1.0-roughness*0.7))*attenuation;
+ return mix(through,reflected,fresnel);
+}
 void main() {
  vec2 uv=qt_TexCoord0;
  vec4 col;
@@ -67,6 +107,12 @@ void main() {
   col.rgb+=lightColor*rim*rimStrength*(0.18+0.35*max(diffuse,0.0));
   col.rgb*=1.0-max(-diffuse,0.0)*(tilt*bevelStrength*0.25+exp(-inside/7.0)*innerShadow*0.45);
   col.rgb+=lightColor*flatSpecular*sheenStrength*0.20;
+  if(rayGlass>0.5) {
+   // A curved optical edge; preserve the existing silhouette and alpha mask.
+   float opticalTilt=sin(profile*1.45);
+   vec3 opticalNormal=normalize(vec3(normal*opticalTilt,cos(profile*1.45)));
+   col.rgb=mix(col.rgb,traceGlass(uv*size,opticalNormal,col.rgb),glassMix);
+  }
   col.rgb=clamp(col.rgb,0.0,1.0);
  }
  float a=alpha*coverage*qt_Opacity;

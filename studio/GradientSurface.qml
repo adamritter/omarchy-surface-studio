@@ -12,6 +12,10 @@ ShaderEffect {
  property real angle: (settings.angle || 0) * Math.PI / 180
  property real strength: settings.strength === undefined ? 0.55 : settings.strength
  property real alpha: settings.effectsEnabled ? (settings.surfaceOpacity === undefined ? 1 : settings.surfaceOpacity) : 1.0
+ property real rayGlass: settings.rayGlass ? 1 : 0
+ property real glassIor: settings.glassIor === undefined ? 1.45 : settings.glassIor
+ property real glassThickness: settings.glassThickness === undefined ? 4 : settings.glassThickness
+ property real glassMix: settings.glassMix === undefined ? 0.55 : settings.glassMix
  property real radius: 0
  property real grain: settings.grain === undefined ? 0.15 : settings.grain
  property real effects: settings.effectsEnabled ? 1 : 0
