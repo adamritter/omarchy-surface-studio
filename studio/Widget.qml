@@ -243,6 +243,7 @@ Panel {
    Item {
     Layout.fillWidth:true; Layout.preferredHeight:root.targetPanel?126:Math.max(62,(root.bar?root.bar.barSize:Style.bar.sizeHorizontal)+32)
     Rectangle {
+     visible:!root.targetPanel
      anchors.fill:sampleCard; radius:sampleCard.corner; color:"#172536"
      gradient: Gradient {
       orientation:Gradient.Horizontal
