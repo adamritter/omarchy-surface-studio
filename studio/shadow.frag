@@ -6,6 +6,7 @@ layout(std140,binding=0) uniform buf {
  vec2 size; vec2 cardSize;
  float padding; float radius; float softness; float offset; float strength;
  float contactStrength; float contactBlur; float contactOffset;
+ vec4 clipBounds;
 };
 float distanceToCard(vec2 p) {
  float r=min(radius,min(cardSize.x,cardSize.y)*0.5);
@@ -14,6 +15,11 @@ float distanceToCard(vec2 p) {
 }
 void main() {
  vec2 p=qt_TexCoord0*size-vec2(padding);
+ // Keep full-screen popup shadows out of the bar, including its blur mask.
+ if(p.x<clipBounds.x || p.y<clipBounds.y || p.x>=clipBounds.z || p.y>=clipBounds.w) {
+  fragColor=vec4(0.0);
+  return;
+ }
  float original=distanceToCard(p);
  float shifted=distanceToCard(p-vec2(0.0,offset));
  float falloff=exp(-pow(max(shifted,0.0)/max(softness*0.48,1.0),2.0));

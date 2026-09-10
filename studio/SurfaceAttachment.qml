@@ -63,6 +63,19 @@ Item {
   if(root.card && source) root.card.borderSpec=Qt.binding(function() { return source.borderSpec })
  }
  SurfaceShadow {
+  clipBounds: {
+   if(!("cardOrigin" in root.popup)) return Qt.vector4d(-100000,-100000,100000,100000)
+   // Explicit animation dependencies keep the cutoff screen-aligned as the card moves.
+   var movement=root.card.x+root.card.y+root.card.scale
+   var origin=root.card.mapToItem(null,0,0)
+   var pos=root.popup.barPos
+   var left=pos==="left"?root.popup.barW:0
+   var top=pos==="top"?root.popup.barH:0
+   var right=root.popup.screenW-(pos==="right"?root.popup.barW:0)
+   var bottom=root.popup.screenH-(pos==="bottom"?root.popup.barH:0)
+   var scale=Math.max(0.001,root.card.scale)
+   return Qt.vector4d((left-origin.x)/scale,(top-origin.y)/scale,(right-origin.x)/scale,(bottom-origin.y)/scale)
+  }
   settings:root.controller.panelSettings
   radius:root.card.radius
   // KeyboardPanel has a full-screen drawing surface. PopupCard's native
