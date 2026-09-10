@@ -14,15 +14,14 @@ omarchy plugin add https://github.com/adamritter/omarchy-surface-studio --enable
 
 Enabling selects this bar while preserving the configured widgets and their settings. The ◈ Surface Studio button appears automatically on the right (or in the position of an existing editor). The plugin does not install or modify your network, tray, clock, or other widgets.
 
-For a local checkout, run `python3 install.py`. The installer makes a backup, preserves the previous bar selection, and activates the bundle. `python3 install.py --uninstall` restores the previous bar selection while preserving other later configuration changes. A running shell is required for activation. It restarts the shell to refresh cached QML components and restores the current appearance preview without saving it.
 
 ## Remove
 
-For a marketplace/Git installation, run `omarchy plugin remove io.github.adamritter.surface-studio`. Omarchy handles the bar fallback. Your saved `~/.config/omarchy/surface-studio.json` is retained. For the backup-aware local installer, use `python3 install.py --uninstall` as described above.
+For a marketplace/Git installation, run `omarchy plugin remove io.github.adamritter.surface-studio`. Omarchy handles the bar fallback. Your saved `~/.config/omarchy/surface-studio.json` is retained.
 
 ## Dependencies
 
-Requires Omarchy Quattro with its running shell, Quickshell, Qt 6 Quick/Controls and ShaderTools runtime, Hyprland (`hyprctl`), and Bash. These are supplied by the tested Omarchy environment. The optional local installer requires Python 3; shader rebuilding requires Qt 6 `qsb`. Bundled stock widgets use Omarchy commands, and the keyboard-layout widget uses `xkbcli`. No additional network service or account is needed.
+Requires Omarchy Quattro with its running shell, Quickshell, Qt 6 Quick/Controls and ShaderTools runtime, Hyprland (`hyprctl`), and Bash. These are supplied by the tested Omarchy environment. Shader rebuilding requires Qt 6 `qsb`. Bundled stock widgets use Omarchy commands, and the keyboard-layout widget uses `xkbcli`. No additional network service or account is needed.
 
 ## Use
 
@@ -46,7 +45,7 @@ Backdrop blur uses runtime Hyprland layer rules and may enable the shared blur e
 
 ## Development
 
-GLSL sources and their compiled Qt shader packages are included. Run `./build-shaders.sh` after shader changes. Run `python3 -m unittest discover -s tests` for installation/configuration tests. The installer never edits the packaged Omarchy source.
+GLSL sources and their compiled Qt shader packages are included. Run `./build-shaders.sh` after shader changes. Run `python3 -m unittest discover -s tests` for package checks. Installation and removal use Omarchy’s own plugin manager.
 
 MIT licensed; includes Omarchy bar code (see LICENSE and UPSTREAM.md).
 
