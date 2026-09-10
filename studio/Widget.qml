@@ -243,7 +243,7 @@ Panel {
    Item {
     Layout.fillWidth:true; Layout.preferredHeight:root.targetPanel?126:Math.max(62,(root.bar?root.bar.barSize:Style.bar.sizeHorizontal)+32)
     Rectangle {
-     anchors.fill:parent; anchors.margins:8; radius:8; color:"#172536"
+     anchors.fill:sampleCard; radius:sampleCard.corner; color:"#172536"
      clip:true
      Row {
       anchors.fill:parent
