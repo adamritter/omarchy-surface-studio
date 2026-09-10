@@ -2,7 +2,7 @@
 
 A replacement Omarchy bar with Surface Studio built in. One plugin installs both the bar and its appearance editor. No upstream patch or separate `adam.bar` / `adam.surface-studio` installation is required.
 
-![Surface Studio open on an empty Omarchy desktop, showing material and lighting controls](docs/screenshots/surface-studio.png)
+![Surface Studio open on an empty Omarchy desktop, showing material and lighting controls](docs/screenshots/surface-studio-ray-glass-2026-09-10.png)
 
 *Live screenshot with the Effects tab open. Bar and panel styling can be configured separately.*
 
