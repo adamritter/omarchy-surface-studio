@@ -244,10 +244,10 @@ Panel {
     Layout.fillWidth:true; Layout.preferredHeight:root.targetPanel?126:Math.max(62,(root.bar?root.bar.barSize:Style.bar.sizeHorizontal)+32)
     Rectangle {
      anchors.fill:sampleCard; radius:sampleCard.corner; color:"#172536"
-     clip:true
-     Row {
-      anchors.fill:parent
-      Repeater { model:12; Rectangle { width:40; height:parent.height; color:index%2===0?"#293e53":"#192939" } }
+     gradient: Gradient {
+      orientation:Gradient.Horizontal
+      GradientStop { position:0; color:"#202633" }
+      GradientStop { position:1; color:"#343946" }
      }
     }
     Item {
