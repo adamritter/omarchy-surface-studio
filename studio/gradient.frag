@@ -12,6 +12,7 @@ layout(std140,binding=0) uniform buf {
  float effects; float lightAngle; float bevelWidth; float bevelStrength;
  float rimStrength; float sheenStrength; float innerShadow;
  float rimWidth; float edgeProfile; float roughness; float lightX; float lightY; float lightSize; float tintAmount;
+ float coherentLight;
  float edgeTint; float edgeTintWidth;
  float rayGlass; float glassIor; float glassThickness; float glassMix;
 };
@@ -107,10 +108,25 @@ void main() {
   float diffuse=dot(normal,normalize((lamp-uv)+lightDir*0.25));
   float rim=exp(-inside/max(rimWidth,0.25));
   vec3 lightColor=vec3(0.94,0.97,1.0);
+  if(coherentLight>0.5) {
+   // One soft source drives the surface, the edge and the shadow direction.
+   vec2 toward=lamp-vec2(0.5);
+   toward=length(toward)>0.001?normalize(toward):vec2(0.0,-1.0);
+   float facing=max(dot(normal,toward),0.0);
+   vec2 delta=(uv-lamp)*vec2(size.x/max(size.y,1.0),1.0);
+   float pool=exp(-dot(delta,delta)/(0.12+lightSize*0.8));
+   float edgeLight=pow(facing,2.0)*exp(-inside/max(rimWidth,0.25));
+   float broad=pool*sheenStrength*0.14;
+   float glint=edgeLight*(0.025+pool*0.22)*rimStrength;
+   float bevel=tilt*facing*pool*bevelStrength*0.18;
+   col.rgb*=1.0-(1.0-facing)*exp(-inside/5.0)*innerShadow*0.14;
+   col.rgb+=lightColor*(broad+glint+bevel);
+  } else {
   col.rgb+=lightColor*(max(diffuse,0.0)*tilt*bevelStrength*0.18+edgeSpecular*bevelStrength*0.65);
   col.rgb+=lightColor*rim*rimStrength*(0.18+0.35*max(diffuse,0.0));
   col.rgb*=1.0-max(-diffuse,0.0)*(tilt*bevelStrength*0.25+exp(-inside/7.0)*innerShadow*0.45);
   col.rgb+=lightColor*flatSpecular*sheenStrength*0.20;
+  }
   if(rayGlass>0.5) {
    // A curved optical edge; preserve the existing silhouette and alpha mask.
    float opticalTilt=sin(profile*1.45);

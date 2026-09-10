@@ -484,6 +484,8 @@ Panel {
       }
       StudioToggle { visible:root.effectPage===0; text:"Backdrop blur"; checked:root.studio && root.profileValue("backdropBlur"); onClicked:root.profileChange("backdropBlur",checked) }
       Text { visible:root.effectPage===0; Layout.fillWidth:true; wrapMode:Text.WordWrap; text:"Backdrop blur also enables Hyprland's shared blur engine. Lighting and material effects are rendered locally."; color:Color.popups.text; opacity:0.6; font.pixelSize:11 }
+      StudioToggle { visible:root.effectPage===1; text:"Coordinated soft lighting"; checked:root.studio && root.profileValue("coherentLight"); onClicked:root.profileChange("coherentLight",checked) }
+      Text { visible:root.effectPage===1 && root.profileValue("coherentLight"); Layout.fillWidth:true; wrapMode:Text.WordWrap; text:"Light position coordinates the surface glow, edge highlights and shadow direction."; color:Color.popups.text; opacity:0.65; font.pixelSize:11 }
       StudioToggle { visible:root.effectPage===1; text:"Pointer-following light"; checked:root.studio && root.profileValue("followLight"); onClicked:root.profileChange("followLight",checked) }
       StudioToggle { visible:root.effectPage===3 && root.targetPanel; text:"Button materials and panel control styling"; checked:root.studio && root.profileValue("controlsEnabled"); onClicked:root.profileChange("controlsEnabled",checked) }
       ColumnLayout {

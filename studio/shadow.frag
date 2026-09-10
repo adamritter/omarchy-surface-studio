@@ -7,6 +7,7 @@ layout(std140,binding=0) uniform buf {
  float padding; float radius; float softness; float offset; float strength;
  float contactStrength; float contactBlur; float contactOffset;
  vec4 clipBounds;
+ vec2 shadowDirection;
 };
 float distanceToCard(vec2 p) {
  float r=min(radius,min(cardSize.x,cardSize.y)*0.5);
@@ -21,11 +22,11 @@ void main() {
   return;
  }
  float original=distanceToCard(p);
- float shifted=distanceToCard(p-vec2(0.0,offset));
+ float shifted=distanceToCard(p-shadowDirection*offset);
  float falloff=exp(-pow(max(shifted,0.0)/max(softness*0.48,1.0),2.0));
  // Do not paint behind the translucent fill: the shadow is outside the card.
  float outside=smoothstep(-0.6,0.6,original);
- float nearDistance=distanceToCard(p-vec2(0.0,contactOffset));
+ float nearDistance=distanceToCard(p-shadowDirection*contactOffset);
  float nearFalloff=exp(-pow(max(nearDistance,0.0)/max(contactBlur,1.0),2.0));
  float combined=1.0-(1.0-falloff*strength)*(1.0-nearFalloff*contactStrength);
  float a=combined*outside*qt_Opacity;

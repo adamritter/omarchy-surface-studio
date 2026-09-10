@@ -8,6 +8,13 @@ ShaderEffect {
  property vector4d clipBounds: Qt.vector4d(-100000,-100000,100000,100000)
  property real radius: 0
  property real softness: settings.shadowBlur === undefined ? 18 : settings.shadowBlur
+ property vector2d shadowDirection: {
+  if(!settings.coherentLight) return Qt.vector2d(0,1)
+  var dx=0.5-(settings.lightX===undefined?0.2:settings.lightX)
+  var dy=0.5-(settings.lightY===undefined?0.05:settings.lightY)
+  var length=Math.sqrt(dx*dx+dy*dy)
+  return length>0.001?Qt.vector2d(dx/length,dy/length):Qt.vector2d(0,1)
+ }
  property real offset: settings.shadowOffset === undefined ? 6 : settings.shadowOffset
  property real strength: settings.shadowStrength || 0
  property real contactStrength: settings.contactStrength || 0

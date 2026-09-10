@@ -12,6 +12,7 @@ ShaderEffect {
  property real angle: (settings.angle || 0) * Math.PI / 180
  property real strength: settings.strength === undefined ? 0.55 : settings.strength
  property real alpha: settings.effectsEnabled ? (settings.surfaceOpacity === undefined ? 1 : settings.surfaceOpacity) : 1.0
+ property real coherentLight: settings.coherentLight ? 1 : 0
  property real edgeTint: settings.edgeTint || 0
  property real edgeTintWidth: settings.edgeTintWidth === undefined ? 5 : settings.edgeTintWidth
  property real rayGlass: settings.rayGlass ? 1 : 0
