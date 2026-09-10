@@ -16,6 +16,14 @@ Enabling selects this bar while preserving the configured widgets and their sett
 
 For a local checkout, run `python3 install.py`. The installer makes a backup, preserves the previous bar selection, and activates the bundle. `python3 install.py --uninstall` restores the previous bar selection while preserving other later configuration changes. A running shell is required for activation. It restarts the shell to refresh cached QML components and restores the current appearance preview without saving it.
 
+## Remove
+
+For a marketplace/Git installation, run `omarchy plugin remove io.github.adamritter.surface-studio`. Omarchy handles the bar fallback. Your saved `~/.config/omarchy/surface-studio.json` is retained. For the backup-aware local installer, use `python3 install.py --uninstall` as described above.
+
+## Dependencies
+
+Requires Omarchy Quattro with its running shell, Quickshell, Qt 6 Quick/Controls and ShaderTools runtime, Hyprland (`hyprctl`), and Bash. These are supplied by the tested Omarchy environment. The optional local installer requires Python 3; shader rebuilding requires Qt 6 `qsb`. Bundled stock widgets use Omarchy commands, and the keyboard-layout widget uses `xkbcli`. No additional network service or account is needed.
+
 ## Use
 
 Open ◈. The editor and status messages are in English:
