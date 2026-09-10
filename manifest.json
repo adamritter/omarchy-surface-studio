@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.adamritter.surface-studio",
+  "name": "Surface Studio Bar",
+  "version": "0.1.0",
+  "author": "Adam Ritter",
+  "description": "A configurable material bar with built-in Surface Studio, live colors, lighting and button states.",
+  "kinds": [
+    "bar"
+  ],
+  "entryPoints": {
+    "bar": "bar/Bar.qml"
+  }
+}
