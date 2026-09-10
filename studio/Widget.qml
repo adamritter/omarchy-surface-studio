@@ -257,7 +257,7 @@ Panel {
      width:parent.width-16
      height:root.targetPanel?parent.height-16:(root.bar?root.bar.barSize:Style.bar.sizeHorizontal)
      property real corner:root.targetPanel?(root.profileBorderEnabled?root.profileValue("borderRadius"):Style.cornerRadius):0
-     SurfaceShadow { settings:root.previewSettings; radius:sampleCard.corner }
+     SurfaceShadow { naturalShadow:root.targetPanel?1:0; settings:root.previewSettings; radius:sampleCard.corner }
      Rectangle { anchors.fill:parent; radius:sampleCard.corner; color:root.targetPanel?Color.popups.background:Color.bar.background; visible:!(root.studio && ((root.studio.current.enabled && (root.targetPanel?root.studio.current.panels:root.studio.current.bar)) || root.profileValue("effectsEnabled"))) }
      GradientSurface {
       anchors.fill:parent

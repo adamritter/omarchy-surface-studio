@@ -6,6 +6,7 @@ ShaderEffect {
  property real cardHeight: parent ? parent.height : 0
  // Allowed drawing bounds in card-local coordinates.
  property vector4d clipBounds: Qt.vector4d(-100000,-100000,100000,100000)
+ property real naturalShadow: 0
  property real radius: 0
  property real softness: settings.shadowBlur === undefined ? 18 : settings.shadowBlur
  property vector2d shadowDirection: {

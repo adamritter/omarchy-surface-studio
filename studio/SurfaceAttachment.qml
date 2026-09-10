@@ -63,6 +63,7 @@ Item {
   if(root.card && source) root.card.borderSpec=Qt.binding(function() { return source.borderSpec })
  }
  SurfaceShadow {
+  naturalShadow: 1
   clipBounds: {
    if(!("cardOrigin" in root.popup)) return Qt.vector4d(-100000,-100000,100000,100000)
    // Explicit animation dependencies keep the cutoff screen-aligned as the card moves.
