@@ -49,3 +49,7 @@ Backdrop blur uses runtime Hyprland layer rules and may enable the shared blur e
 GLSL sources and their compiled Qt shader packages are included. Run `./build-shaders.sh` after shader changes. Run `python3 -m unittest discover -s tests` for installation/configuration tests. The installer never edits the packaged Omarchy source.
 
 MIT licensed; includes Omarchy bar code (see LICENSE and UPSTREAM.md).
+
+## Ray-glass experiment
+
+Effects → Material includes optional analytic ray-traced glass for bar and panel profiles. It uses a virtual environment, not the live desktop. See [the tuned appearance preset](presets/README.md) and [technical limitations](studio/README.md#experimental-analytic-ray-glass).
