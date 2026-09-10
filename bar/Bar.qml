@@ -1764,7 +1764,7 @@ Item {
       id: horizontalModuleList
 
       Row {
-        spacing: 0
+        spacing: surfaceStudioController.current.barModuleGap
 
         Repeater {
           model: moduleListRoot.entries
@@ -1782,7 +1782,7 @@ Item {
       id: verticalModuleList
 
       Column {
-        spacing: 0
+        spacing: surfaceStudioController.current.barModuleGap
 
         Repeater {
           model: moduleListRoot.entries
@@ -1849,6 +1849,22 @@ Item {
     }
 
     HoverHandler { id: moduleHover }
+
+    // Paint beneath the widget and observe its existing pointer state.
+    // No new input grab, widget transform or click forwarding is introduced.
+    Rectangle {
+      anchors.fill: parent
+      anchors.margins: 2
+      radius: Math.min(surfaceStudioController.current.barHoverRadius, Math.max(0, height / 2))
+      color: root.barForeground
+      visible: surfaceStudioController.current.barHoverEnabled && slot.width > 4 && slot.height > 4
+      opacity: !slot.dragSource && (slot.hovered || slot.panelOpen)
+        ? surfaceStudioController.current.barHoverStrength * (modulePointer.pressed ? 1.6 : slot.panelOpen ? 0.85 : 1) : 0
+      scale: modulePointer.pressed && !slot.dragSource ? 0.96 : 1
+      Behavior on opacity { NumberAnimation { duration: 130; easing.type: Easing.OutCubic } }
+      Behavior on scale { NumberAnimation { duration: 90; easing.type: Easing.OutCubic } }
+    }
+
 
     BorderSurface {
       visible: slot.dragSource

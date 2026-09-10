@@ -12,6 +12,7 @@ layout(std140,binding=0) uniform buf {
  float effects; float lightAngle; float bevelWidth; float bevelStrength;
  float rimStrength; float sheenStrength; float innerShadow;
  float rimWidth; float edgeProfile; float roughness; float lightX; float lightY; float lightSize; float tintAmount;
+ float edgeTint; float edgeTintWidth;
  float rayGlass; float glassIor; float glassThickness; float glassMix;
 };
 // Bounded analytic ray tracing: a beveled entrance normal, planar rear
@@ -69,12 +70,15 @@ void main() {
   float luminance=dot(col.rgb,vec3(0.2126,0.7152,0.0722));
   col.rgb=mix(vec3(luminance),col.rgb,tintAmount);
  }
- col=mix(baseColor,col,strength);
- float noise=fract(sin(dot(uv*size,vec2(12.9898,78.233)))*43758.5453)-0.5;
- col.rgb=clamp(col.rgb+noise*grain*0.035,0.0,1.0);
  float r=min(radius,min(size.x,size.y)*0.5);
  vec2 d=abs(uv*size-size*0.5)-(size*0.5-vec2(r));
  float sd=length(max(d,0.0))+min(max(d.x,d.y),0.0)-r;
+ // Preserve full tint at the edges while calming the center.
+ float edgeWeight=exp(-max(0.0,-sd)/max(edgeTintWidth,1.0));
+ float localStrength=strength*mix(1.0,edgeWeight,edgeTint);
+ col=mix(baseColor,col,localStrength);
+ float noise=fract(sin(dot(uv*size,vec2(12.9898,78.233)))*43758.5453)-0.5;
+ col.rgb=clamp(col.rgb+noise*grain*0.035,0.0,1.0);
  // The item bounds already clip straight edges. Antialiasing those edges
  // makes the outer pixel translucent, especially at fractional display scales.
  // Only curved corner pixels need the signed-distance coverage ramp.
